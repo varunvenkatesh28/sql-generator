@@ -8,32 +8,14 @@ version :   date :        description :                       changed by
 0.0         2026-08-31    auto-generated from mapping         ai_agent
 **********************************************************************/
 
-with deduplicated_ad_mstr as (
-    select *
-    from tfsdl_aig_qad_delta.ad_mstr
-    qualify row_number() over (partition by ad_addr, ad_domain order by rec_crt_ts desc) = 1
-),
-currency_enriched as (
-    select *
-    from tfsdl_aig_qad_delta.cm_mstr
-    left join tfsdl_aig_qad_delta.currency
-    on currency.currencycode = cm_mstr.cm_curr
-),
-country_hierarchy_joined as (
-    select *
-    from deduplicated_ad_mstr
-    inner join tfsdl_edp_common_dims.d_cntry_hier
-    on upper(d_cntry_hier.cntry_nm) = deduplicated_ad_mstr.ad_country
-)
-
 select
-    concat('msd_qad_', lower(deduplicated_ad_mstr.ad_domain), '|', deduplicated_ad_mstr.ad_addr) as cust_key,
-    concat('msd_qad_', lower(deduplicated_ad_mstr.ad_domain), '|', deduplicated_ad_mstr.ad_addr) as src_sys_cd,
-    cm_mstr.cm_addr as cust_id,
-    deduplicated_ad_mstr.ad_name as cust_nm,
-    deduplicated_ad_mstr.ad_name as cust_nm_en,
-    deduplicated_ad_mstr.ad_type as cust_type_cd,
-    deduplicated_ad_mstr.ad_type as cust_type_nm,
+    concat('msd_qad_', lower(ad_mstr.ad_domain), '|', ad_mstr.ad_addr) as cust_key,
+    concat('msd_qad_', lower(ad_mstr.ad_domain), '|', ad_mstr.ad_addr) as src_sys_cd,
+    cm.cm_addr as cust_id,
+    ad_mstr.ad_name as cust_nm,
+    ad_mstr.ad_name as cust_nm_en,
+    ad_mstr.ad_type as cust_type_cd,
+    ad_mstr.ad_type as cust_type_nm,
     cast(null as string) as active_flg,
     cast(null as string) as parent_cust_id,
     cast(null as string) as parent_cust_nm,
@@ -56,20 +38,20 @@ select
     cast(null as string) as cust_acct_grp_nm,
     cast(null as string) as cust_class_cd,
     cast(null as string) as cust_class_nm,
-    cm_mstr.cm_curr as curncy_cd,
-    currency.currencydescription as curncy_nm,
+    cm.cm_curr as curncy_cd,
+    curr.currencydescription as curncy_nm,
     cast(null as string) as indy_cd,
     cast(null as string) as indy_nm,
     cast(null as string) as intl_loc_nbr_check_digit,
-    deduplicated_ad_mstr.ad_lang as lang_cd,
+    ad_mstr.ad_lang as lang_cd,
     cast(null as string) as lang_iso_cd,
     cast(null as string) as lang_nm,
     cast(null as string) as lgl_stat_cd,
     cast(null as string) as lgl_stat_nm,
     cast(null as string) as rgn_mkt,
     cast(null as string) as sls_since_yr,
-    deduplicated_ad_mstr.ad_sort as sort_field,
-    deduplicated_ad_mstr.ad_tax_usage as tax_juris_cd,
+    ad_mstr.ad_sort as sort_field,
+    ad_mstr.ad_tax_usage as tax_juris_cd,
     cast(null as string) as tax_juris_nm,
     cast(null as string) as teletex_nbr,
     cast(null as string) as telex_nbr,
@@ -79,7 +61,7 @@ select
     cast(null as string) as trading_prtnr_co_cd,
     cast(null as string) as url,
     cast(null as string) as unload_point_flg,
-    deduplicated_ad_mstr.ad_vat_reg as vat_regstr_nbr,
+    ad_mstr.ad_vat_reg as vat_regstr_nbr,
     cast(null as string) as central_del_block_flg,
     cast(null as string) as central_del_flg,
     cast(null as string) as central_post_block_flg,
@@ -89,30 +71,30 @@ select
     cast(null as string) as one_time_cust_flg,
     cast(null as string) as sls_prtnr_flg,
     cast(null as string) as sls_prospect_flg,
-    deduplicated_ad_mstr.ad_address_id as addr_key,
-    deduplicated_ad_mstr.ad_line2 as street_line,
-    deduplicated_ad_mstr.ad_zip as pstl_cd,
-    deduplicated_ad_mstr.ad_city as city,
+    ad_mstr.ad_address_id as addr_key,
+    ad_mstr.ad_line2 as street_line,
+    ad_mstr.ad_zip as pstl_cd,
+    ad_mstr.ad_city as city,
     cast(null as string) as city_coord,
     cast(null as string) as po_box,
     cast(null as string) as po_box_pstl_cd,
     cast(null as string) as district,
-    deduplicated_ad_mstr.ad_state as st_prov_cd,
+    ad_mstr.ad_state as st_prov_cd,
     cast(null as string) as st_prov_nm,
-    deduplicated_ad_mstr.ad_ctry as cntry_cd,
-    deduplicated_ad_mstr.ad_country as cntry_nm,
-    deduplicated_ad_mstr.ad_fax as fax_nbr,
+    ad_mstr.ad_ctry as cntry_cd,
+    ad_mstr.ad_country as cntry_nm,
+    ad_mstr.ad_fax as fax_nbr,
     cast(null as string) as trading_prtnr_co_nm,
     cast(null as string) as prim_contact_key,
     cast(null as string) as dnb_duns_nbr,
-    deduplicated_ad_mstr.ad_line1 as addr_nm_line2,
-    deduplicated_ad_mstr.ad_line2 as addr_nm_line3,
-    deduplicated_ad_mstr.ad_line3 as addr_nm_line4,
+    ad_mstr.ad_line1 as addr_nm_line2,
+    ad_mstr.ad_line2 as addr_nm_line3,
+    ad_mstr.ad_line3 as addr_nm_line4,
     cast(null as string) as cust_cond_grp_cd1,
     cast(null as string) as cust_cond_grp_cd2,
     cast(null as string) as cust_cond_grp_nm1,
     cast(null as string) as cust_cond_grp_nm2,
-    deduplicated_ad_mstr.ad_email as cust_email_addr_txt,
+    ad_mstr.ad_email as cust_email_addr_txt,
     cast(null as string) as cust_rept_hier_base,
     cast(null as string) as dw_src_key,
     cast(null as string) as indy_cd1,
@@ -121,38 +103,38 @@ select
     cast(null as string) as indy_nm2,
     cast(null as string) as intl_loc_nbr1,
     cast(null as string) as intl_loc_nbr2,
-    deduplicated_ad_mstr.ad_phone as phn_nbr1,
-    deduplicated_ad_mstr.ad_phone2 as phn_nbr2,
+    ad_mstr.ad_phone as phn_nbr1,
+    ad_mstr.ad_phone2 as phn_nbr2,
     cast(null as string) as search_mcode1,
     cast(null as string) as search_mcode2,
     cast(null as string) as search_mcode3,
     cast(null as string) as sply_center_cd,
     cast(null as string) as sply_center_flg,
     cast(null as string) as sply_center_nm,
-    deduplicated_ad_mstr.ad_pst_id as tax_nbr1,
+    ad_mstr.ad_pst_id as tax_nbr1,
     cast(null as string) as tax_nbr2,
     cast(null as string) as tax_nbr3,
     cast(null as string) as src_crt_by,
-    deduplicated_ad_mstr.ad_date as src_crt_ts,
-    deduplicated_ad_mstr.ad_userid as src_updt_by,
-    cm_mstr.cm_mod_date as src_updt_ts,
+    ad_mstr.ad_date as src_crt_ts,
+    ad_mstr.ad_userid as src_updt_by,
+    cm.cm_mod_date as src_updt_ts,
     current_timestamp as rec_crt_ts,
     current_timestamp as rec_updt_ts,
     cast(null as string) as stock_ticker_cd,
     cast(null as string) as cdw_cust_key,
     cast(null as string) as dw_cust_key,
     cast(null as string) as addr_phn_nbr,
-    deduplicated_ad_mstr.ad_fax2 as addr_fax_nbr,
+    ad_mstr.ad_fax2 as addr_fax_nbr,
     cast(null as string) as sls_chnl_cd,
     cast(null as string) as sls_terr_cd,
     cast(null as string) as sls_rep_cust_key,
     cast(null as string) as addr_type_cd,
     cast(null as string) as hfm_entity_key,
     cast(null as string) as hfm_entity_cd,
-    d_cntry_hier.cntry_hier_key as deflt_delvr_cntry_key,
-    deduplicated_ad_mstr.ad_ctry as deflt_delvr_cntry_cd,
+    dch.cntry_hier_key as deflt_delvr_cntry_key,
+    ad_mstr.ad_ctry as deflt_delvr_cntry_cd,
     cast(null as string) as trade_chnl_cd,
-    case when deduplicated_ad_mstr.ad_addr like 'Z%' or deduplicated_ad_mstr.ad_addr like 'TM%' then 'IC' else '3rd' end as inter_co_cd,
+    case when ad_mstr.ad_addr like 'Z%' or ad_mstr.ad_addr like 'TM%' then 'IC' else '3rd' end as inter_co_cd,
     cast(null as string) as county,
     cast(null as string) as temporary_flag,
     cast(null as string) as bank_acct_1,
@@ -213,11 +195,11 @@ select
     'NA' as crt_proc_ts,
     'NA' as updt_proc_id,
     'NA' as updt_proc_ts
-from tfsdl_aig_qad_delta.cm_mstr
-left join deduplicated_ad_mstr
-on upper(cm_mstr.cm_addr) = upper(deduplicated_ad_mstr.ad_addr)
-and upper(cm_mstr.cm_domain) = upper(deduplicated_ad_mstr.ad_domain)
-left join tfsdl_aig_qad_delta.currency
-on currency.currencycode = cm_mstr.cm_curr
-inner join tfsdl_edp_common_dims.d_cntry_hier
-on upper(d_cntry_hier.cntry_nm) = deduplicated_ad_mstr.ad_country;
+from tfsdl_aig_qad_delta.cm_mstr CM
+left join tfsdl_aig_qad_delta.ad_mstr
+    on CM.cm_addr=ad_mstr.ad_addr and lower(CM.cm_domain)=lower(ad_mstr.ad_domain)
+left join tfsdl_aig_qad_delta.currency CURR
+    on CURR.currencycode=CM.cm_curr
+inner join tfsdl_edp_common_dims.d_cntry_hier DCH
+    on UPPER(DCH.cntry_nm)=ad_mstr.ad_country
+;
