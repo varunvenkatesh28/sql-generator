@@ -9,7 +9,7 @@ version :   date :        description :                       changed by
 **********************************************************************/
 
 select 
-        concat('msd_qad_', lower(ad_mstr.ad_domain)) || '|' || ad_mstr.ad_addr as cust_key,
+        concat('msd_qad_', lower(ad_mstr.ad_domain), '|', ad_mstr.ad_addr) as cust_key,
     concat('msd_qad_', lower(ad_mstr.ad_domain)) as src_sys_cd,
     cast(cm.cm_addr as string) as cust_id,
     cast(ad_mstr.ad_name as string) as cust_nm,
@@ -131,8 +131,8 @@ select
     cast(null as string) as addr_type_cd,
     cast(null as string) as hfm_entity_key,
     cast(null as string) as hfm_entity_cd,
-    cast(d_cntry_hier.cntry_hier_key as string) as deflt_delvr_cntry_key,
-    cast(ad_mstr.ad_ctry as string) as deflt_delvr_cntry_cd,
+    d_cntry_hier.cntry_hier_key as deflt_delvr_cntry_key,
+    ad_mstr.ad_ctry as deflt_delvr_cntry_cd,
     cast(null as string) as trade_chnl_cd,
     case when ad_mstr.ad_addr like 'Z%' or ad_mstr.ad_addr like 'TM%' then 'IC' else '3rd' end as inter_co_cd,
     cast(null as string) as county,
@@ -155,6 +155,5 @@ select
     cast(null as string) as profile
 from cm_mstr cm
 left join ad_mstr ad 
-    on lower(ad.ad_domain) = lower(cm.cm_domain) 
-    and ad.ad_addr = cm.cm_addr
+    on lower(ad.ad_domain) = lower(cm.cm_domain) and ad.ad_addr = cm.cm_addr
 ;
