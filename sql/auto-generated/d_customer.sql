@@ -9,7 +9,7 @@ version :   date :        description :                       changed by
 **********************************************************************/
 
 select 
-        concat('msd_qad_', lower(ad_mstr.ad_domain)) || '|' || ad_mstr.ad_addr as cust_key,
+        concat('msd_qad_', lower(ad_mstr.ad_domain), '|', ad_mstr.ad_addr) as cust_key,
     concat('msd_qad_', lower(ad_mstr.ad_domain)) as src_sys_cd,
     cast(cm.cm_addr as string) as cust_id,
     cast(ad_mstr.ad_name as string) as cust_nm,
@@ -153,8 +153,7 @@ select
     cast(null as string) as priority,
     cast(null as string) as route,
     cast(null as string) as profile
-from cm_mstr cm
-left join ad_mstr ad 
-    on lower(ad.ad_domain) = lower(cm.cm_domain) 
-    and ad.ad_addr = cm.cm_addr
+from po_dedup po
+left join ad_mstr ad on ad.ad_addr = po.cm_addr
+where lower(ad_domain) = lower(cm_domain)
 ;
